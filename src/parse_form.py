@@ -15,3 +15,8 @@ class Stage(BaseModel):
     name: str
     time: str
     description: str
+
+@app.get("/", response_class=HTMLResponse)
+async def show_form(request: Request):
+    """Function to show form"""
+    return templates.TemplateResponse("form.html", {"request": request})
