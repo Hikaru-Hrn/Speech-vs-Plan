@@ -2,3 +2,4 @@ __pycache__/
 .env
 data/inbox/*.mp3
 .idea
+connection.json
