@@ -16,7 +16,24 @@ class Stage(BaseModel):
     time: str
     description: str
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/lectures", response_class=HTMLResponse)
 async def show_form(request: Request):
     """Function to show form"""
-    return templates.TemplateResponse("form.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="form.html")
+
+@app.post("/lectures/add")
+async def lecture_to_json(stages: List[Stage]):
+    """Function to save lecture"""
+    if not os.path.isdir("lectures"):
+        os.mkdir("lectures")
+    stages_list = [stage.model_dump() for stage in stages]
+    file_name = f"lectures/lecture_{len(os.listdir("lectures"))}.json"
+    lecture_json = {
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "total_stages": len(stages_list),
+        "stages": stages_list
+    }   
+    with open(file_name, 'w', encoding='utf-8') as file:
+        json.dump(lecture_json, file, ensure_ascii=False)
+    
+    return {"status": "success", "message": "Lecture saved"}
