@@ -10,3 +10,8 @@ import os
 templates = Jinja2Templates(directory="templates")
 app = FastAPI()
 
+class Stage(BaseModel):
+    stage_number: int
+    name: str
+    time: str
+    description: str
