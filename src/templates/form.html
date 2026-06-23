@@ -229,14 +229,48 @@
         });
       });
 
-      document.getElementById('submitBtn').addEventListener('click', function() {
+      document.getElementById('submitBtn').addEventListener('click', async function() {
         const stages = stagesContainer.querySelectorAll('.stage-block');
         if (stages.length === 0) {
           alert('Добавьте хотя бы один этап!');
           return;
         }
         
-        alert("Готово к отправке");
+        const lecturePlan = [];
+
+        stages.forEach((stage, index) => {
+          const stageNum = index + 1;
+          const nameInput = stage.querySelector(`input[name="stageName${stageNum}"]`);
+          const timeInput = stage.querySelector(`input[name="stageTime${stageNum}"]`);
+          const descInput = stage.querySelector(`textarea[name="stageDescription${stageNum}"]`);
+
+          lecturePlan.push({
+            stage_number: stageNum,
+            name: nameInput ? nameInput.value : '',
+            time: timeInput ? timeInput.value : '',
+            description: descInput ? descInput.value : ''
+          });
+        });
+
+        try {
+          const response = await fetch('/lectures/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(lecturePlan)
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            alert(`Успешно! ${result.message}`);
+          } else {
+            alert('Ошибка сервера при сохранении.');
+          }
+        } catch (error) {
+          console.error('Ошибка:', error);
+          alert('Не удалось связаться с сервером.');
+        }
       });
     </script>
 </body>
