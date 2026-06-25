@@ -36,6 +36,15 @@
             padding: 0 20px;
         }
 
+        h1.step-number {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 30pt;
+            color: #666;
+            font-weight: normal;
+        }
+
         h1.main-title {
             text-align: center;
             margin-top: 0;
@@ -92,8 +101,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px;
             width: 100%;
+            gap: 25px;
             flex-wrap: nowrap;
         }
 
@@ -134,17 +143,18 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="main-title">Загрузка плана лекций</h1>
-        <p>Здесь вы можете загрузить ваш файл с планом лекции. Для этого выберите файл или перетащите его.</p>
+        <h1 class="step-number">Шаг 2</h1>
+        <h1 class="main-title">Загрузка аудиофайла</h1>
+        <p>На втором шаге вам следует загрузить аудиофайл с вашей лекцией. Для этого загрузите или перетащите файл.</p>
 
         <div id="dropContainer" class="drop-zone">
-            <p id="dropMessage">Зона для загрузки файлов. Поддерживаются файлы с расширением .md, .txt и .docx.</p>
+            <p id="dropMessage">Зона для загрузки файлов. Поддерживаются файлы с расширением .mp3, .wav, .ogg и .flac.</p>
             <div id="fileList" class="file-list"></div>
             <input type="file" id="fileInput" multiple hidden>
         </div>
         <div class="buttons-row">
-            <button type="button">Отправить</button>
-            <button type="submit" class="primary-btn">Назад</button>
+            <button type="button">Конвентировать</button>
+            <button type="submit" class="primary-btn">Отправить</button>
         </div>
     </div>
 
