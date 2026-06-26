@@ -26,6 +26,11 @@ async def step_one_page(request: Request):
     """Function to show step one page"""
     return templates.TemplateResponse(request=request, name="step_one.html")
 
+@app.get("/step2")
+async def step_two_page(request: Request):
+    """Function to show step two page"""
+    return templates.TemplateResponse(request=request, name="step_two.html")
+
 @app.get("/lectures", response_class=HTMLResponse)
 async def show_form(request: Request):
     """Function to show form"""
