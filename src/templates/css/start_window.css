@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <title>SPEECH-VS-PLAN</title>
-    <style>
-      @font-face {
+@font-face {
         font-family: 'Schiffbauer';
         src: url('../fonts/Schiffbauer-Regular.otf') format('opentype');
         font-weight: normal;
@@ -49,11 +43,3 @@
       button:active {
         transform: scale(0.97);
       }
-    </style>
-  </head>
-  <body>
-    <h1>SPEECH-VS-PLAN</h1>
-    <p class="desc">Этот модуль предназначен для сравнения запланированного содержания лекции с тем что было реально сказано. Его задача – выделить пропущенные пункты плана, новые темы возникшие спонтанно, и наметить последующие действия (тесты, задания, методички) на основе фактической речи.</p>
-    <button>Погнали!</button>
-  </body>
-</html>

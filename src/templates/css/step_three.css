@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <title>SPEECH-VS-PLAN</title>
-    <style>
-              @font-face {
+    @font-face {
             font-family: 'Schiffbauer';
             src: url('../fonts/Schiffbauer-Regular.otf') format('opentype');
             font-weight: normal;
@@ -105,7 +99,6 @@
             background-color: #555;
         }
 
-        /* Стиль для кнопки "Сравнить" — выше и такого же цвета */
         .compare-wrapper {
             display: flex;
             justify-content: center;
@@ -115,32 +108,12 @@
 
         button.compare-btn {
             width: 300px;
-            height: 65px; /* Чуть выше остальных */
+            height: 65px;
             font-size: 28px;
-            background-color: #333; /* Такой же цвет, как у других кнопок */
+            background-color: #333;
             color: #fff;
         }
 
         button.compare-btn:hover {
             background-color: #555;
         }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="step-number">Шаг 3</h1>
-      <h1 class="main-title">Сравнение</h1>
-      <p>Все готово для сравнения плана и речи. Это как раз можно сделать на 3 шаге. Вам нужно только нажать на кнопку "Сравнить" и выбрать, что делать дальше выгружать его или смотерть в браузере.</p>
-      
-      <!-- Кнопка "Сравнить" — выше остальных -->
-      <div class="compare-wrapper">
-          <button type="button" class="compare-btn">Сравнить</button>
-      </div>
-      
-      <div class="buttons-row">
-          <button type="button">Посмотреть в браузере</button>
-          <button type="submit" class="primary-btn">Загрузить файл</button>
-      </div>
-    </div>
-  </body>
-</html>
