@@ -36,7 +36,10 @@ async def step_three_page(request: Request):
     """Function to show page with comparing lecture and its plan"""
     return templates.TemplateResponse(request=request, name="step_three.html")
 
-
+@app.get("/upload-plan")
+async def upload_plan(request: Request):
+    """Function to show page where user can upload lecture plan file"""
+    return templates.TemplateResponse(request=request, name="upload_plan.html")
 
 @app.get("/lectures", response_class=HTMLResponse)
 async def show_form(request: Request):
