@@ -23,12 +23,12 @@ async def home(request: Request):
 
 @app.get("/step1")
 async def step_one_page(request: Request):
-    """Function to show step one page"""
+    """Function to show choice of way to upload file page"""
     return templates.TemplateResponse(request=request, name="step_one.html")
 
 @app.get("/step2")
 async def step_two_page(request: Request):
-    """Function to show step two page"""
+    """Function to show uploading audiofile page"""
     return templates.TemplateResponse(request=request, name="step_two.html")
 
 @app.get("/lectures", response_class=HTMLResponse)
