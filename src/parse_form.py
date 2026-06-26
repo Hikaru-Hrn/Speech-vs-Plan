@@ -21,6 +21,11 @@ async def home(request: Request):
     """Function to show main page"""
     return templates.TemplateResponse(request=request, name="start_window.html")
 
+@app.get("/step1")
+async def step_one_page(request: Request):
+    """Function to show step one page"""
+    return templates.TemplateResponse(request=request, name="step_one.html")
+
 @app.get("/lectures", response_class=HTMLResponse)
 async def show_form(request: Request):
     """Function to show form"""
