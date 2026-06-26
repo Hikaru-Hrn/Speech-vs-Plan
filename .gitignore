@@ -4,3 +4,6 @@ data/inbox/*.mp3
 .idea
 connection.json
 lectures/
+.arcignore
+.idea
+a.yaml
