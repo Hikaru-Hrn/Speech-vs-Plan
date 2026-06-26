@@ -16,6 +16,11 @@ class Stage(BaseModel):
     time: str
     description: str
 
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    """Function to show main page"""
+    return templates.TemplateResponse(request=request, name="start_window.html")
+
 @app.get("/lectures", response_class=HTMLResponse)
 async def show_form(request: Request):
     """Function to show form"""
