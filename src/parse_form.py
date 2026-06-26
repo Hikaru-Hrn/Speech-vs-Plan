@@ -1,14 +1,18 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from datetime import datetime
 from typing import List
 from pydantic import BaseModel
 import json
 import os
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates/html")
 app = FastAPI()
+
+app.mount("/css", StaticFiles(directory="templates/css"), name="css")
+app.mount("/js", StaticFiles(directory="templates/js"), name="js")
 
 class Stage(BaseModel):
     stage_number: int
