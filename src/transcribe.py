@@ -1,9 +1,8 @@
-import speech_recognition as sr
+# coding=utf8
+import os
+import sys
+import grpc
+from cloudapi.output.transcribe import transcribe_audio_file
 
-st = sr.Recognizer()
-
-with sr.Microphone() as mic:
-    st.adjust_for_ambient_noise(source=mic, duration=0.5)
-    audio = st.listen(source=mic)
-    query = st.recognize_google(audio_data=audio, language='ru-RU').lower()
-print(query)
+if __name__ == '__main__':
+    transcribe_audio_file("../data/inbox_audio_test/Запись.wav", "../data/outbox_audio_test/transcript.txt")
