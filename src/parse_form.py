@@ -31,6 +31,13 @@ async def step_two_page(request: Request):
     """Function to show uploading audiofile page"""
     return templates.TemplateResponse(request=request, name="step_two.html")
 
+@app.get("/step3")
+async def step_three_page(request: Request):
+    """Function to show page with comparing lecture and its plan"""
+    return templates.TemplateResponse(request=request, name="step_three.html")
+
+
+
 @app.get("/lectures", response_class=HTMLResponse)
 async def show_form(request: Request):
     """Function to show form"""
