@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>SPEECH-VS-PLAN</title>
+    <link rel="stylesheet" href="./../css/upload_plan.css">
+    <script src="./../js/upload_plan.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">Загрузка плана лекций</h1>
+        <p>Здесь вы можете загрузить ваш файл с планом лекции. Для этого выберите файл или перетащите его.</p>
+
+        <div id="dropContainer" class="drop-zone">
+            <p id="dropMessage">Зона для загрузки файлов. Поддерживаются файлы с расширением .md, .txt и .docx.</p>
+            <div id="fileList" class="file-list"></div>
+            <input type="file" id="fileInput" multiple hidden>
+        </div>
+        <div class="buttons-row">
+            <button type="button">Отправить</button>
+            <button type="submit" class="primary-btn">Назад</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>SPEECH-VS-PLAN</title>
+    <link rel="stylesheet" href="./../css/step_two.css">
+    <script src="./../js/step_two.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="step-number">Шаг 2</h1>
+        <h1 class="main-title">Загрузка аудиофайла</h1>
+        <p>На втором шаге вам следует загрузить аудиофайл с вашей лекцией. Для этого загрузите или перетащите файл.</p>
+
+        <div id="dropContainer" class="drop-zone">
+            <p id="dropMessage">Зона для загрузки файлов. Поддерживаются файлы с расширением .mp3, .wav, .ogg и .flac.</p>
+            <div id="fileList" class="file-list"></div>
+            <input type="file" id="fileInput" multiple hidden>
+        </div>
+        <div class="buttons-row">
+            <button type="button">Конвентировать</button>
+            <button type="submit" class="primary-btn">Отправить</button>
+        </div>
+    </div>
+</body>
+</html>
