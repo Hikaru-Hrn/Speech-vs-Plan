@@ -1,0 +1,18 @@
+[project]
+name = "speech-vs-plan"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Hikaru-Hrn",email = "geniysenkou@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "grpcio (>=1.81.1,<2.0.0)",
+    "fastapi[all] (>=0.138.1,<0.139.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
