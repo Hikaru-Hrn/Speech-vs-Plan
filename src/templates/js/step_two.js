@@ -54,7 +54,7 @@
                 }
             });
 
-            function handleFiles(files) {
+            async function handleFiles(files) {
                 const fileNames = Array.from(files).map(f => f.name);
                 fileList.textContent = 'Выбрано: ' + fileNames.join(', ');
                 const dataTransfer = new DataTransfer();
@@ -64,6 +64,22 @@
                 fileInput.files = dataTransfer.files;
 
                 console.log('Загружены файлы:', fileNames);
+                const formdata = new FormData();
+                for (let i = 0; i < files.length; i++)
+                {
+                    formdata.append('files', files[i])
+                }
+                const response = await fetch('/step_two/save', {
+                    method: 'POST',
+                    body: formdata
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Ответ от FastAPI:', result);
             }
 
             document.addEventListener('dragleave', function(e) {
