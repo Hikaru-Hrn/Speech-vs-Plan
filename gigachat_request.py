@@ -1,6 +1,5 @@
 import requests
 from get_access_token import get_access_token
-import json
 
 BASE_URL = "https://gigachat.devices.sberbank.ru/api/v1"
 access_token_json = get_access_token()

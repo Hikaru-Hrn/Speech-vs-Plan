@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -7,6 +7,13 @@ from typing import List
 from pydantic import BaseModel
 import json
 import os
+import shutil
+from pathlib import Path
+
+LECTURES_JSONS_DIR = "lectures"
+TRANSCRIPTS_DIR = "lectures_transcripts"
+AUDIOFILES_DIR = "lectures_audiofiles"
+UPLOADED_PLANS_DIR = "uploaded_plans"
 
 templates = Jinja2Templates(directory="templates/html")
 app = FastAPI()
@@ -50,13 +57,31 @@ async def show_form(request: Request):
     """Function to show form"""
     return templates.TemplateResponse(request=request, name="form.html")
 
+@app.post("/upload-plan/save")
+async def save_uploaded_plans(files: List[UploadFile] = File(...)):
+    """Function to save uploaded lecture plans files"""
+
+    if not os.path.isdir(UPLOADED_PLANS_DIR):
+        os.mkdir(UPLOADED_PLANS_DIR)
+    for file in files:
+        file_id = len(os.listdir(UPLOADED_PLANS_DIR))
+        file_extension = Path(file.filename).suffix.lower()
+        if not file_extension:
+            file_extension = ".bin"
+        file_path = f"{UPLOADED_PLANS_DIR}/lecture_{file_id}_plan{file_extension}"
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+    return {"message": "Файлы успешно загружены!"}
+
 @app.post("/lectures/add")
 async def lecture_to_json(stages: List[Stage]):
     """Function to save lecture"""
-    if not os.path.isdir("lectures"):
-        os.mkdir("lectures")
+    if not os.path.isdir(LECTURES_JSONS_DIR):
+        os.mkdir(LECTURES_JSONS_DIR)
     stages_list = [stage.model_dump() for stage in stages]
-    file_name = f"lectures/lecture_{len(os.listdir("lectures"))}.json"
+    file_name = f"{LECTURES_JSONS_DIR}/lecture_{len(os.listdir(LECTURES_JSONS_DIR))}.json"
     lecture_json = {
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total_stages": len(stages_list),
