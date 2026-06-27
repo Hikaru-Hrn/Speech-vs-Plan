@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -7,6 +7,11 @@ from typing import List
 from pydantic import BaseModel
 import json
 import os
+import shutil
+
+LECTURES_JSONS_DIR = "lectures"
+TRANSCRIPTS_DIR = "lectures_transcripts"
+AUDIOFILES_DIR = "lectures_audiofiles"
 
 templates = Jinja2Templates(directory="templates/html")
 app = FastAPI()
@@ -53,10 +58,10 @@ async def show_form(request: Request):
 @app.post("/lectures/add")
 async def lecture_to_json(stages: List[Stage]):
     """Function to save lecture"""
-    if not os.path.isdir("lectures"):
-        os.mkdir("lectures")
+    if not os.path.isdir(LECTURES_JSONS_DIR):
+        os.mkdir(LECTURES_JSONS_DIR)
     stages_list = [stage.model_dump() for stage in stages]
-    file_name = f"lectures/lecture_{len(os.listdir("lectures"))}.json"
+    file_name = f"{LECTURES_JSONS_DIR}/lecture_{len(os.listdir(LECTURES_JSONS_DIR))}.json"
     lecture_json = {
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total_stages": len(stages_list),
