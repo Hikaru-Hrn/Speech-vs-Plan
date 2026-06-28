@@ -31,7 +31,7 @@ class Stage(BaseModel):
     description: str
 
 def save_files(destination_dir: str, 
-                     files: List[UploadFile] = File(...)):
+                     files: List[UploadFile]):
     if not os.path.isdir(destination_dir):
         os.mkdir(destination_dir)
     for file in files:
@@ -93,6 +93,20 @@ async def save_uploaded_files(files: List[UploadFile] = File(...)):
                    files=files)
 
     return RedirectResponse(url="/plan-to-json")
+
+
+@app.post("/plan-to-json")
+async def uploaded_files_to_json(request: Request):
+    """Function to convert plans files to JSON"""
+
+    files_list = os.listdir(UPLOADED_PLANS_DIR)
+    file_id = len(os.listdir(LECTURES_JSONS_DIR))
+    for filename in files_list:
+        json_filename = f"lecture_{file_id}.json"
+        plan_to_json(f"{UPLOADED_PLANS_DIR}/{filename}", f"{LECTURES_JSONS_DIR}/{json_filename}")
+        file_id += 1
+    
+    return {"status": "success", "redirect_url": "/step2"}
 
 
 @app.post("/lectures/add")
