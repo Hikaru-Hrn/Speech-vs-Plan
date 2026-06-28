@@ -16,6 +16,12 @@ TRANSCRIPTS_DIR = "lectures_transcripts"
 UPLOADED_AUDIOFILES_DIR = "lectures_audiofiles"
 UPLOADED_PLANS_DIR = "uploaded_plans"
 
+FILES_TO_PROCESS = {
+    "lecture_plan": None,
+    "lecture_audiofile": None,
+    "lecture_transcript": None
+}
+
 templates = Jinja2Templates(directory="templates/html")
 app = FastAPI()
 
@@ -80,16 +86,11 @@ async def show_form(request: Request):
     return templates.TemplateResponse(request=request, name="form.html")
 
 
-@app.post("/save")
-async def save_uploaded_files(files: List[UploadFile] = File(...)):
-    """Function to save uploaded files"""
+@app.post("/save-plans")
+async def save_uploaded_plans(files: List[UploadFile] = File(...)):
+    """Function to save uploaded plans files"""
 
-    type_flag = True if Path(files[0].filename).suffix.lower() == ".wav" else False
-    if type_flag:
-        save_files(destination_dir=UPLOADED_AUDIOFILES_DIR,
-                   files=files)
-    else:
-        save_files(destination_dir=UPLOADED_PLANS_DIR,
+    save_files(destination_dir=UPLOADED_PLANS_DIR,
                    files=files)
 
     return RedirectResponse(url="/plan-to-json")
@@ -101,12 +102,17 @@ async def uploaded_files_to_json(request: Request):
 
     files_list = os.listdir(UPLOADED_PLANS_DIR)
     file_id = len(os.listdir(LECTURES_JSONS_DIR))
+    lecture_file = None
     for filename in files_list:
         json_filename = f"lecture_{file_id}.json"
         plan_to_json(f"{UPLOADED_PLANS_DIR}/{filename}", f"{LECTURES_JSONS_DIR}/{json_filename}")
         file_id += 1
-    
-    return {"status": "success", "redirect_url": "/step2"}
+        lecture_file = f"{LECTURES_JSONS_DIR}/{json_filename}"
+    return {
+                "status": "success", 
+                "redirect_url": "/step2", 
+                "plan_file_to_process": lecture_file
+            }
 
 
 @app.post("/lectures/add")
@@ -123,5 +129,18 @@ async def lecture_to_json(stages: List[Stage]):
     }
     with open(file_name, 'w', encoding='utf-8') as file:
         json.dump(lecture_json, file, ensure_ascii=False)
-
+    
     return {"status": "success", "message": "Lecture saved"}
+
+@app.post("/save-audiofiles")
+async def save_uploaded_audiofiles(files: List[UploadFile] = File(...)):
+    """Function to save uploaded audiofiles"""
+
+    save_files(destination_dir=UPLOADED_AUDIOFILES_DIR,
+               files=files)
+    
+    return RedirectResponse(url="/step3")
+
+@app.post("/speech-transcribe-request")
+async def transcribe_api_request():
+    pass
