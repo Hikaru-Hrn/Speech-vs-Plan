@@ -1,3 +1,0 @@
-iam_bindings:
-  - name: yandex_mdb_mongo_db_cluster
-    rename: yandex_mdb_mongodb_cluster
