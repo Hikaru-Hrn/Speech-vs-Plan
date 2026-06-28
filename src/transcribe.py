@@ -146,3 +146,6 @@ def transcribe_audio_file(input_audio_path, output_text_path):
         return True
 
     return False
+
+# if __name__ == '__main__':
+#     transcribe_audio_file("../data/inbox_audio_test/Запись.wav", "../data/outbox_audio_test/transcript.txt")
