@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, File, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime
@@ -9,10 +9,11 @@ import json
 import os
 import shutil
 from pathlib import Path
+from md_docx_to_json import plan_to_json
 
 LECTURES_JSONS_DIR = "lectures"
 TRANSCRIPTS_DIR = "lectures_transcripts"
-AUDIOFILES_DIR = "lectures_audiofiles"
+UPLOADED_AUDIOFILES_DIR = "lectures_audiofiles"
 UPLOADED_PLANS_DIR = "uploaded_plans"
 
 templates = Jinja2Templates(directory="templates/html")
@@ -20,6 +21,7 @@ app = FastAPI()
 
 app.mount("/css", StaticFiles(directory="templates/css"), name="css")
 app.mount("/js", StaticFiles(directory="templates/js"), name="js")
+app.mount("/fonts", StaticFiles(directory="templates/fonts"), name="fonts")
 
 
 class Stage(BaseModel):
@@ -28,6 +30,19 @@ class Stage(BaseModel):
     time: str
     description: str
 
+def save_files(destination_dir: str, 
+                     files: List[UploadFile] = File(...)):
+    if not os.path.isdir(destination_dir):
+        os.mkdir(destination_dir)
+    for file in files:
+        file_id = len(os.listdir(destination_dir))
+        file_extension = Path(file.filename).suffix.lower()
+        if not file_extension:
+            file_extension = ".bin"
+        file_path = f"{destination_dir}/lecture_{file_id}_plan{file_extension}"
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -65,23 +80,19 @@ async def show_form(request: Request):
     return templates.TemplateResponse(request=request, name="form.html")
 
 
-@app.post("/upload-plan/save")
-async def save_uploaded_plans(files: List[UploadFile] = File(...)):
-    """Function to save uploaded lecture plans files"""
+@app.post("/save")
+async def save_uploaded_files(files: List[UploadFile] = File(...)):
+    """Function to save uploaded files"""
 
-    if not os.path.isdir(UPLOADED_PLANS_DIR):
-        os.mkdir(UPLOADED_PLANS_DIR)
-    for file in files:
-        file_id = len(os.listdir(UPLOADED_PLANS_DIR))
-        file_extension = Path(file.filename).suffix.lower()
-        if not file_extension:
-            file_extension = ".bin"
-        file_path = f"{UPLOADED_PLANS_DIR}/lecture_{file_id}_plan{file_extension}"
+    type_flag = True if Path(files[0].filename).suffix.lower() == ".wav" else False
+    if type_flag:
+        save_files(destination_dir=UPLOADED_AUDIOFILES_DIR,
+                   files=files)
+    else:
+        save_files(destination_dir=UPLOADED_PLANS_DIR,
+                   files=files)
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-    return {"message": "Файлы успешно загружены!"}
+    return RedirectResponse(url="/plan-to-json")
 
 
 @app.post("/lectures/add")
