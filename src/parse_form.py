@@ -10,6 +10,8 @@ import os
 import shutil
 from pathlib import Path
 from md_docx_to_json import plan_to_json
+from transcribe import transcribe_audio_file
+from analyze import ask_with_file_content
 
 LECTURES_JSONS_DIR = "lectures"
 TRANSCRIPTS_DIR = "lectures_transcripts"
@@ -36,19 +38,18 @@ class Stage(BaseModel):
     time: str
     description: str
 
-def save_files(destination_dir: str, 
-                     files: List[UploadFile]):
+def save_file(destination_dir: str, 
+                     file: UploadFile):
     if not os.path.isdir(destination_dir):
         os.mkdir(destination_dir)
-    for file in files:
-        file_id = len(os.listdir(destination_dir))
-        file_extension = Path(file.filename).suffix.lower()
-        if not file_extension:
-            file_extension = ".bin"
-        file_path = f"{destination_dir}/lecture_{file_id}_plan{file_extension}"
+    file_id = len(os.listdir(destination_dir))
+    file_extension = Path(file.filename).suffix.lower()
+    if not file_extension:
+        file_extension = ".bin"
+    file_path = f"{destination_dir}/lecture_{file_id}_plan{file_extension}"
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -86,32 +87,35 @@ async def show_form(request: Request):
     return templates.TemplateResponse(request=request, name="form.html")
 
 
-@app.post("/save-plans")
-async def save_uploaded_plans(files: List[UploadFile] = File(...)):
-    """Function to save uploaded plans files"""
+@app.post("/save-plan")
+async def save_uploaded_plan(file: UploadFile = File(...)):
+    """Function to save uploaded plan file"""
 
-    save_files(destination_dir=UPLOADED_PLANS_DIR,
-                   files=files)
+    save_file(destination_dir=UPLOADED_PLANS_DIR,
+                   file=file)
 
     return RedirectResponse(url="/plan-to-json")
 
 
 @app.post("/plan-to-json")
-async def uploaded_files_to_json(request: Request):
+async def uploaded_file_to_json(request: Request):
     """Function to convert plans files to JSON"""
 
-    files_list = os.listdir(UPLOADED_PLANS_DIR)
+    filename = os.listdir(UPLOADED_PLANS_DIR)[0]
+    if not os.path.isdir(LECTURES_JSONS_DIR):
+        os.mkdir(LECTURES_JSONS_DIR)
     file_id = len(os.listdir(LECTURES_JSONS_DIR))
-    lecture_file = None
-    for filename in files_list:
-        json_filename = f"lecture_{file_id}.json"
-        plan_to_json(f"{UPLOADED_PLANS_DIR}/{filename}", f"{LECTURES_JSONS_DIR}/{json_filename}")
-        file_id += 1
-        lecture_file = f"{LECTURES_JSONS_DIR}/{json_filename}"
+    json_filename = f"lecture_{file_id}.json"
+    plan_to_json(f"{UPLOADED_PLANS_DIR}/{filename}", f"{LECTURES_JSONS_DIR}/{json_filename}")
+    file_id += 1
+    FILES_TO_PROCESS["lecture_plan"] = f"{LECTURES_JSONS_DIR}/{json_filename}"
+    for item in os.listdir(UPLOADED_PLANS_DIR):
+        file_path = os.path.join(UPLOADED_PLANS_DIR, item)
+        if os.path.isfile(file_path):
+            os.remove(file_path) 
     return {
                 "status": "success", 
-                "redirect_url": "/step2", 
-                "plan_file_to_process": lecture_file
+                "redirect_url": "/step2"
             }
 
 
@@ -132,15 +136,21 @@ async def lecture_to_json(stages: List[Stage]):
     
     return {"status": "success", "message": "Lecture saved"}
 
-@app.post("/save-audiofiles")
-async def save_uploaded_audiofiles(files: List[UploadFile] = File(...)):
-    """Function to save uploaded audiofiles"""
+@app.post("/save-audiofile")
+async def save_uploaded_audiofile(file: UploadFile = File(...)):
+    """Function to save uploaded audiofile"""
 
-    save_files(destination_dir=UPLOADED_AUDIOFILES_DIR,
-               files=files)
+    save_file(destination_dir=UPLOADED_AUDIOFILES_DIR,
+               file=file)
     
     return RedirectResponse(url="/step3")
 
 @app.post("/speech-transcribe-request")
 async def transcribe_api_request():
     pass
+
+@app.post("/gigachat-api-request")
+async def gigachat_api_request():
+    response = ask_with_file_content(FILES_TO_PROCESS["lecture_plan"], 
+                                     FILES_TO_PROCESS["lecture_transcript"])
+    return {"message": "success", "gigachat_response": response.json()}
