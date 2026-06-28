@@ -10,6 +10,7 @@ requires-python = ">=3.13"
 dependencies = [
     "grpcio (>=1.81.1,<2.0.0)",
     "fastapi[all] (>=0.138.1,<0.139.0)",
+    "yandexcloud (>=0.396.0,<0.397.0)",
 ]
 
 
