@@ -83,10 +83,10 @@
         console.log('Отправка файла:', selectedFile.name);
         
         const formdata = new FormData();
-        formdata.append('file', selectedFile);
+        formdata.append('files', selectedFile);
 
         try {
-            const response = await fetch('/save-plan', {
+            const response = await fetch('/upload-audio/save', {
                 method: 'POST',
                 body: formdata
             });
@@ -98,9 +98,6 @@
             const result = await response.json();
             console.log('Ответ от FastAPI:', result);
             alert('Файл успешно загружен!');
-            if (result.redirect_url) {
-                    window.location.href = result.redirect_url;
-            }
             
         } catch (error) {
             console.error('Ошибка при отправке:', error);
