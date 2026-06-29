@@ -133,3 +133,8 @@
         button.primary-btn:hover {
             background-color: #555;
         }
+
+        .link{
+            margin-top: 60px;
+            font-size: 18pt;
+        }
