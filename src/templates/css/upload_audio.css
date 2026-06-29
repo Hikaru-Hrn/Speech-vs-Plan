@@ -1,4 +1,4 @@
- @font-face {
+@font-face {
             font-family: 'Schiffbauer';
             src: url('../fonts/Schiffbauer-Regular.otf') format('opentype');
             font-weight: normal;
@@ -28,15 +28,6 @@
             align-items: center;
             width: 700px;
             padding: 0 20px;
-        }
-
-        h1.step-number {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 30pt;
-            color: #666;
-            font-weight: normal;
         }
 
         h1.main-title {
@@ -95,8 +86,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
             gap: 25px;
+            width: 100%;
             flex-wrap: nowrap;
         }
 
@@ -132,9 +123,4 @@
 
         button.primary-btn:hover {
             background-color: #555;
-        }
-
-        .link{
-            margin-top: 60px;
-            font-size: 18pt;
         }
