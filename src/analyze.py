@@ -43,6 +43,7 @@ def get_access_token():
     if data['expires_at'] > int(time.time() * 1000):
         return data
     else:
+        response_json = _form_request()
         return response_json if response_json else None
 
 
