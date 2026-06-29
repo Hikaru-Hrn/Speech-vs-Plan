@@ -3,8 +3,10 @@ import json
 from analyze import _form_request, get_access_token
 from transcribe import transcribe_audio_file
 
-def main(tokens: bool = typer.Option(False, "--tokens", "-t", help="token mod"),
-test: bool = typer.Option(False, "--fefe", "-f", help="test mode")):
+GET_TOKEN_PARAMS_FILE = 'get_access_token.json'
+SAVE_TOKEN_FILE = 'access_token.json'
+
+def main(tokens: bool = typer.Option(True, "--tokens", "-t", help="token mod")):
     """
     Тест Yandex SpeechKit
     """
@@ -29,7 +31,7 @@ test: bool = typer.Option(False, "--fefe", "-f", help="test mode")):
         with open("get_access_token.json", "w", encoding="utf-8") as f:
             f.write(json.dumps(gigachat_config))
 
-        access_token_json = get_access_token()
+        get_access_token()
 
-    if __name__ == "__main__":
-        typer.run(main)
+if __name__ == "__main__":
+    typer.run(main)
