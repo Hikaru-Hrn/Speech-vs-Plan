@@ -6,9 +6,14 @@ from transcribe import transcribe_audio_file
 GET_TOKEN_PARAMS_FILE = 'get_access_token.json'
 SAVE_TOKEN_FILE = 'access_token.json'
 
-def main(tokens: bool = typer.Option(True, "--tokens", "-t", help="token mod")):
+def main(tokens: bool = typer.Option(False, "--tokens", "-t", help="add tokens"),
+         program: bool = typer.Option(True, "--yandexspeechkit", "-y", help="add yandexspeechkit"),
+         input_audio_file: str = typer.Option(None, "--input", "-i", help="input audio file"),
+         input_text_plan: str = typer.Option(None, "--input-textplan", "-i", help="input text plan"),
+         output_text_file:str = typer.Option(None, "--output-text", "-o", help="output text file")
+         ):
     """
-    Тест Yandex SpeechKit
+    Thank you
     """
     # Yandex SpeechKit
     if tokens:
@@ -32,6 +37,11 @@ def main(tokens: bool = typer.Option(True, "--tokens", "-t", help="token mod")):
             f.write(json.dumps(gigachat_config))
 
         get_access_token()
+
+    if program:
+        transcribe_audio_file()
+
+
 
 if __name__ == "__main__":
     typer.run(main)
