@@ -95,12 +95,18 @@
         console.log('Начинаем сравнение...');
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            console.log('Сравнение завершено');
-            alert('Сравнение успешно завершено!');
+            const response = await fetch('/gigachat-api-request', {
+                method: 'POST',
+                body: null
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+            const result = await response.json();
+            console.log('Ответ от FastAPI:', result);
         } catch (error) {
-            console.error('Ошибка при сравнении:', error);
-            alert('Произошла ошибка при сравнении');
+            console.error('Ошибка при отправке:', error);
         } finally {
             hideLoader();
         }
