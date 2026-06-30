@@ -243,17 +243,19 @@ async def show_analysis_in_browser():
             FILES_TO_PROCESS["lecture_comparison"], 
             'r', encoding='utf-8') as comparison_json:
             json_content = json.load(comparison_json)
-        choices = json_content['choices']
-        message = choices['message']
+        choices = json_content.get('choices', [])
+        if choices and len(choices) > 0:
+            message = choices[0].get('message', {})
+            content = message.get('content', '')
         return {
             "status": "success", 
-            "gigachat-answer": message['content'],
+            "gigachat_answer": content,
             "error_msg": None
             }
     except Exception as e:
         return {
             "status": "fail",
-            "gigachat-answer": None,
+            "gigachat_answer": None,
             "error_msg": e
         }
 
