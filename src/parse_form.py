@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, File, UploadFile
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime
@@ -218,3 +218,12 @@ async def show_analysis_in_browser():
             "gigachat-answer": None,
             "error_msg": e
         }
+
+@app.get("/download")
+def download_analysis_file():
+    try:
+        if FILES_TO_PROCESS["lecture_comparison"] is not None:
+            file_path = FILES_TO_PROCESS["lecture_comparison"]
+            return FileResponse(path=file_path, filename="lecture_analysis.md")
+    except Exception as e:
+        print(f"An error occured: {e}")
