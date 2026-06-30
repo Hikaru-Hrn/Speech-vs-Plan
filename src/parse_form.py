@@ -37,9 +37,6 @@ app.mount("/fonts", StaticFiles(directory="templates/fonts"), name="fonts")
 
 
 class Stage(BaseModel):
-    stage_number: int
-    name: str
-    time: str
     description: str
 
 def save_file(destination_dir: str, file_type: str, 
@@ -127,7 +124,6 @@ async def uploaded_file_to_json(request: Request):
                 "redirect_url": "/step2"
             }
 
-
 @app.post("/lectures/add")
 async def lecture_to_json(stages: List[Stage]):
     """Function to save lecture"""
@@ -136,9 +132,7 @@ async def lecture_to_json(stages: List[Stage]):
     stages_list = [stage.model_dump() for stage in stages]
     file_name = f"{LECTURES_JSONS_DIR}/lecture_{len(os.listdir(LECTURES_JSONS_DIR))}.json"
     lecture_json = {
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "total_stages": len(stages_list),
-        "stages": stages_list
+        "paragraphs": stages_list
     }
     with open(file_name, 'w', encoding='utf-8') as file:
         json.dump(lecture_json, file, ensure_ascii=False)
@@ -180,9 +174,10 @@ async def gigachat_api_request():
     file_name = f"{COMPARISON_JSONS_DIR}/{base_name}_comparison.json"
     with open(file_name, 'w', encoding='utf-8') as json_file:
         json.dump(response.json(), json_file, ensure_ascii=False, indent=4)
+    FILES_TO_PROCESS['lecture_comparison'] = file_name
     return {"message": "success", "gigachat_response_saved_to": file_name}
 
-@app.post("/save_transcript")
+@app.post("/save-transcript")
 async def upload_transcript(file: UploadFile = File(...)):
     try:
         file_name = save_file(destination_dir=TRANSCRIPTS_DIR, 
