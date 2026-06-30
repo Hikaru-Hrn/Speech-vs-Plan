@@ -43,13 +43,14 @@ def get_access_token():
     if data['expires_at'] > int(time.time() * 1000):
         return data
     else:
+        response_json = _form_request()
         return response_json if response_json else None
 
 
 def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
     """Читает файл и отправляет его содержимое напрямую в запросе"""
     access_token_json = get_access_token()
-    with open('prompts/compare_plan.md', 'r', encoding='utf-8') as compare_prompt:
+    with open('../prompts/compare_plan.md', 'r', encoding='utf-8') as compare_prompt:
         compare_prompt_text = compare_prompt.read()
     with open(lecture_file_path, 'r', encoding='utf-8') as lf:
         file_content = lf.read()
@@ -68,7 +69,7 @@ def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
     }
 
     payload = {
-        "model": "GigaChat",
+        "model": "GigaChat-2-Max",
         "messages": [
             {
                 "role": "user",
@@ -82,7 +83,7 @@ def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
                 """
             }
         ],
-        "temperature": 0.7,
+        "temperature": 0.5,
         "max_tokens": 800
     }
     
