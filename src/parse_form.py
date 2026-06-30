@@ -149,8 +149,31 @@ async def save_uploaded_audiofile(file: UploadFile = File(...)):
     
     return {"status": "success", "message": "audiofile uploaded"}
 
+@app.post("/speech-transcribe-request")
+async def transcribe_api_request(requst: Request):
+    if not os.path.isdir(TRANSCRIPTS_DIR):
+        os.mkdir(TRANSCRIPTS_DIR)
+    file_id = len(os.listdir(TRANSCRIPTS_DIR))
+    lecture_transcribe_path = f"{TRANSCRIPTS_DIR}/lecture_{file_id}_transcript.txt"
+    is_processed = transcribe_audio_file(input_audio_path=FILES_TO_PROCESS["lecture_audiofile"],
+                                         output_text_path=lecture_transcribe_path)
+    FILES_TO_PROCESS["lecture_transcript"] = lecture_transcribe_path
+    print(is_processed)
+    if is_processed:
+        return {"message": "success", "redirect_url": "/step3"}
+    else:
+        return {"message": "fail", "redirect_url": None}
+
 @app.post("/gigachat-api-request")
 async def gigachat_api_request():
     response = ask_with_file_content(FILES_TO_PROCESS["lecture_plan"], 
                                      FILES_TO_PROCESS["lecture_transcript"])
     return {"message": "success", "gigachat_response": response.json()}
+
+@app.post("/prep_transcript")
+async def upload_transcript(file: UploadFile = File(...)):
+    file_name = save_file(destination_dir=TRANSCRIPTS_DIR, 
+                          file_type='transcript',
+                          file=file)
+    FILES_TO_PROCESS["lecture_transcript"] = file_name
+    return {"status": "success", "message": "file uploaded", "redirect_url": "/step3"}
