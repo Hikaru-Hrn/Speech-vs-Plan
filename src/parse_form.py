@@ -137,7 +137,7 @@ async def lecture_to_json(stages: List[Stage]):
     with open(file_name, 'w', encoding='utf-8') as file:
         json.dump(lecture_json, file, ensure_ascii=False)
     
-    return {"status": "success", "message": "Lecture saved"}
+    return {"status": "success", "message": "Лекция сохранена", "redirect_url": "/step2"}
 
 @app.post("/save-audiofile")
 async def save_uploaded_audiofile(file: UploadFile = File(...)):
