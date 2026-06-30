@@ -91,6 +91,10 @@ async def show_form(request: Request):
     """Function to show form"""
     return templates.TemplateResponse(request=request, name="form.html")
 
+@app.get("/upload-transcript")
+async def show_upload_transcript_page(request: Request):
+    """Function to show page to upload prepared transcript"""
+    return templates.TemplateResponse(request=request, name="upload_audio.html")
 
 @app.post("/save-plan")
 async def save_uploaded_plan(file: UploadFile = File(...)):
@@ -178,7 +182,7 @@ async def gigachat_api_request():
         json.dump(response.json(), json_file, ensure_ascii=False, indent=4)
     return {"message": "success", "gigachat_response_saved_to": file_name}
 
-@app.post("/prep_transcript")
+@app.post("/save_transcript")
 async def upload_transcript(file: UploadFile = File(...)):
     try:
         file_name = save_file(destination_dir=TRANSCRIPTS_DIR, 
