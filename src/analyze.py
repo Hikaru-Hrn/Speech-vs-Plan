@@ -69,7 +69,8 @@ def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
     }
 
     payload = {
-        "model": "GigaChat-2-Max",
+        # "model": "GigaChat-2-Max",
+        "model": "GigaChat",
         "messages": [
             {
                 "role": "user",
