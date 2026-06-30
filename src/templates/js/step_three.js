@@ -1,7 +1,10 @@
+// step_three.js - обновленная версия
+
 (function() {
     const compareButton = document.querySelector('.compare-btn');
     const viewButton = document.querySelector('.buttons-row button:first-child');
     const downloadButton = document.querySelector('.buttons-row button:last-child');
+    const readingBlock = document.querySelector('.reading_in_website');
 
     const loaderContainer = document.createElement('div');
     loaderContainer.id = 'loaderContainer';
@@ -78,24 +81,22 @@
     `;
     document.head.appendChild(style);
     document.body.appendChild(loaderContainer);
+
     function showLoader() {
         loaderContainer.style.display = 'flex';
     }
+
     function hideLoader() {
         loaderContainer.style.display = 'none';
     }
 
     async function compareData() {
-        // Показываем загрузчик
         showLoader();
-
         console.log('Начинаем сравнение...');
 
         try {
             await new Promise(resolve => setTimeout(resolve, 5000));
-            
             console.log('Сравнение завершено');
-            
             alert('Сравнение успешно завершено!');
         } catch (error) {
             console.error('Ошибка при сравнении:', error);
@@ -106,8 +107,13 @@
     }
 
     function viewInBrowser() {
-        console.log('Открываем результат в браузере');
-        alert('Функция просмотра в браузере будет реализована');
+        if (readingBlock) {
+            if (readingBlock.style.display === 'none' || readingBlock.style.display === '') {
+                readingBlock.style.display = 'block';
+            } else {
+                readingBlock.style.display = 'none';
+            }
+        }
     }
 
     function downloadFile() {
