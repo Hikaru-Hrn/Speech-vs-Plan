@@ -117,7 +117,7 @@ def transcribe_audio_file(input_audio_path, output_text_path):
 
     audio_working_path = input_audio_path
     is_temp_file = False
-    temp_pcm_path = "../data/inbox_audio_test/temp_converted_audio.pcm"
+    temp_pcm_path = "../data/inbox_audio/temp_converted_audio.pcm"
 
     # Обработка конвертации
     if input_audio_path.lower().endswith('.wav'):
@@ -148,4 +148,4 @@ def transcribe_audio_file(input_audio_path, output_text_path):
     return False
 
 # if __name__ == '__main__':
-#     transcribe_audio_file("../data/inbox_audio_test/Запись.wav", "../data/outbox_audio_test/transcript.txt")
+#     transcribe_audio_file("../data/inbox_audio/Запись.wav", "../data/outbox_audio2text/transcript.txt")
