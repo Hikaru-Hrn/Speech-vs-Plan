@@ -198,3 +198,24 @@ async def upload_transcript(file: UploadFile = File(...)):
             "redirect_url": None,
             "error_msg": e
         }
+    
+@app.post("/show-in-browser")
+async def show_analysis_in_browser():
+    try:
+        with open(
+            FILES_TO_PROCESS["lecture_comparison"], 
+            'r', encoding='utf-8') as comparison_json:
+            json_content = json.load(comparison_json)
+        choices = json_content['choices']
+        message = choices['message']
+        return {
+            "status": "success", 
+            "gigachat-answer": message['content'],
+            "error_msg": None
+            }
+    except Exception as e:
+        return {
+            "status": "fail",
+            "gigachat-answer": None,
+            "error_msg": e
+        }
