@@ -169,11 +169,22 @@
         console.log('Конвертация файла:', selectedFile.name);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            const response = await fetch('/speech-transcribe-request', {
+                method: 'POST',
+                body: null
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Ответ от FastAPI:', result);
+            alert('Файл успешно загружен!');
+            if (result.redirect_url) {
+                    window.location.href = result.redirect_url;
+            }
             
-            console.log('Конвертация завершена');
-            
-            alert('Конвертация успешно завершена!');
         } catch (error) {
             console.error('Ошибка при конвертации:', error);
             alert('Произошла ошибка при конвертации');
@@ -190,10 +201,10 @@
 
         console.log('Отправка файла:', selectedFile.name);
         const formdata = new FormData();
-        formdata.append('files', selectedFile);
+        formdata.append('file', selectedFile);
 
         try {
-            const response = await fetch('/step_two/save', {
+            const response = await fetch('/save-audiofile', {
                 method: 'POST',
                 body: formdata
             });
