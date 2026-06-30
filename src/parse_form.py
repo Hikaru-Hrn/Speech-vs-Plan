@@ -18,11 +18,13 @@ LECTURES_JSONS_DIR = "lectures"
 TRANSCRIPTS_DIR = "lectures_transcripts"
 UPLOADED_AUDIOFILES_DIR = "lectures_audiofiles"
 UPLOADED_PLANS_DIR = "uploaded_plans"
+COMPARISON_JSONS_DIR = "lectures_comparisons"
 
 FILES_TO_PROCESS = {
     "lecture_plan": None,
     "lecture_audiofile": None,
-    "lecture_transcript": None
+    "lecture_transcript": None,
+    "lecture_comparison": None
 }
 
 load_dotenv()
@@ -168,12 +170,31 @@ async def transcribe_api_request(requst: Request):
 async def gigachat_api_request():
     response = ask_with_file_content(FILES_TO_PROCESS["lecture_plan"], 
                                      FILES_TO_PROCESS["lecture_transcript"])
-    return {"message": "success", "gigachat_response": response.json()}
+    if not os.path.isdir(COMPARISON_JSONS_DIR):
+        os.mkdir(COMPARISON_JSONS_DIR)
+    base_name = Path(FILES_TO_PROCESS['lecture_plan']).stem
+    file_name = f"{COMPARISON_JSONS_DIR}/{base_name}_comparison.json"
+    with open(file_name, 'w', encoding='utf-8') as json_file:
+        json.dump(response.json(), json_file, ensure_ascii=False, indent=4)
+    return {"message": "success", "gigachat_response_saved_to": file_name}
 
 @app.post("/prep_transcript")
 async def upload_transcript(file: UploadFile = File(...)):
-    file_name = save_file(destination_dir=TRANSCRIPTS_DIR, 
-                          file_type='transcript',
-                          file=file)
-    FILES_TO_PROCESS["lecture_transcript"] = file_name
-    return {"status": "success", "message": "file uploaded", "redirect_url": "/step3"}
+    try:
+        file_name = save_file(destination_dir=TRANSCRIPTS_DIR, 
+                            file_type='transcript',
+                            file=file)
+        FILES_TO_PROCESS["lecture_transcript"] = file_name
+        return {
+            "status": "success", 
+            "message": "file uploaded", 
+            "redirect_url": "/step3",
+            "error_msg": None
+            }
+    except Exception as e:
+        return {
+            "status": "fail",
+            "message": "an error occured while uploading file",
+            "redirect_url": None,
+            "error_msg": e
+        }
