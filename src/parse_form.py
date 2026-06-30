@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, File, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime
@@ -9,17 +9,27 @@ import json
 import os
 import shutil
 from pathlib import Path
+from md_docx_to_json import plan_to_json
+from transcribe import transcribe_audio_file
+from analyze import ask_with_file_content
 
 LECTURES_JSONS_DIR = "lectures"
 TRANSCRIPTS_DIR = "lectures_transcripts"
-AUDIOFILES_DIR = "lectures_audiofiles"
+UPLOADED_AUDIOFILES_DIR = "lectures_audiofiles"
 UPLOADED_PLANS_DIR = "uploaded_plans"
+
+FILES_TO_PROCESS = {
+    "lecture_plan": None,
+    "lecture_audiofile": None,
+    "lecture_transcript": None
+}
 
 templates = Jinja2Templates(directory="templates/html")
 app = FastAPI()
 
 app.mount("/css", StaticFiles(directory="templates/css"), name="css")
 app.mount("/js", StaticFiles(directory="templates/js"), name="js")
+app.mount("/fonts", StaticFiles(directory="templates/fonts"), name="fonts")
 
 
 class Stage(BaseModel):
@@ -28,6 +38,18 @@ class Stage(BaseModel):
     time: str
     description: str
 
+def save_file(destination_dir: str, 
+                     file: UploadFile):
+    if not os.path.isdir(destination_dir):
+        os.mkdir(destination_dir)
+    file_id = len(os.listdir(destination_dir))
+    file_extension = Path(file.filename).suffix.lower()
+    if not file_extension:
+        file_extension = ".bin"
+    file_path = f"{destination_dir}/lecture_{file_id}_plan{file_extension}"
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -65,23 +87,36 @@ async def show_form(request: Request):
     return templates.TemplateResponse(request=request, name="form.html")
 
 
-@app.post("/upload-plan/save")
-async def save_uploaded_plans(files: List[UploadFile] = File(...)):
-    """Function to save uploaded lecture plans files"""
+@app.post("/save-plan")
+async def save_uploaded_plan(file: UploadFile = File(...)):
+    """Function to save uploaded plan file"""
 
-    if not os.path.isdir(UPLOADED_PLANS_DIR):
-        os.mkdir(UPLOADED_PLANS_DIR)
-    for file in files:
-        file_id = len(os.listdir(UPLOADED_PLANS_DIR))
-        file_extension = Path(file.filename).suffix.lower()
-        if not file_extension:
-            file_extension = ".bin"
-        file_path = f"{UPLOADED_PLANS_DIR}/lecture_{file_id}_plan{file_extension}"
+    save_file(destination_dir=UPLOADED_PLANS_DIR,
+                   file=file)
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+    return RedirectResponse(url="/plan-to-json")
 
-    return {"message": "Файлы успешно загружены!"}
+
+@app.post("/plan-to-json")
+async def uploaded_file_to_json(request: Request):
+    """Function to convert plans files to JSON"""
+
+    filename = os.listdir(UPLOADED_PLANS_DIR)[0]
+    if not os.path.isdir(LECTURES_JSONS_DIR):
+        os.mkdir(LECTURES_JSONS_DIR)
+    file_id = len(os.listdir(LECTURES_JSONS_DIR))
+    json_filename = f"lecture_{file_id}.json"
+    plan_to_json(f"{UPLOADED_PLANS_DIR}/{filename}", f"{LECTURES_JSONS_DIR}/{json_filename}")
+    file_id += 1
+    FILES_TO_PROCESS["lecture_plan"] = f"{LECTURES_JSONS_DIR}/{json_filename}"
+    for item in os.listdir(UPLOADED_PLANS_DIR):
+        file_path = os.path.join(UPLOADED_PLANS_DIR, item)
+        if os.path.isfile(file_path):
+            os.remove(file_path) 
+    return {
+                "status": "success", 
+                "redirect_url": "/step2"
+            }
 
 
 @app.post("/lectures/add")
@@ -98,5 +133,24 @@ async def lecture_to_json(stages: List[Stage]):
     }
     with open(file_name, 'w', encoding='utf-8') as file:
         json.dump(lecture_json, file, ensure_ascii=False)
-
+    
     return {"status": "success", "message": "Lecture saved"}
+
+@app.post("/save-audiofile")
+async def save_uploaded_audiofile(file: UploadFile = File(...)):
+    """Function to save uploaded audiofile"""
+
+    save_file(destination_dir=UPLOADED_AUDIOFILES_DIR,
+               file=file)
+    
+    return RedirectResponse(url="/step3")
+
+@app.post("/speech-transcribe-request")
+async def transcribe_api_request():
+    pass
+
+@app.post("/gigachat-api-request")
+async def gigachat_api_request():
+    response = ask_with_file_content(FILES_TO_PROCESS["lecture_plan"], 
+                                     FILES_TO_PROCESS["lecture_transcript"])
+    return {"message": "success", "gigachat_response": response.json()}

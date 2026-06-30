@@ -6,6 +6,7 @@ import time
 
 GET_TOKEN_PARAMS_FILE = 'get_access_token.json'
 SAVE_TOKEN_FILE = 'access_token.json'
+BASE_URL = "https://gigachat.devices.sberbank.ru/api/v1"
 
 def _form_request():
     rq_uid = str(uuid.uuid4())
@@ -45,12 +46,9 @@ def get_access_token():
         return response_json if response_json else None
 
 
-BASE_URL = "https://gigachat.devices.sberbank.ru/api/v1"
-access_token_json = get_access_token()
-
-
 def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
     """Читает файл и отправляет его содержимое напрямую в запросе"""
+    access_token_json = get_access_token()
     with open('prompts/compare_plan.md', 'r', encoding='utf-8') as compare_prompt:
         compare_prompt_text = compare_prompt.read()
     with open(lecture_file_path, 'r', encoding='utf-8') as lf:
@@ -85,7 +83,7 @@ def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
             }
         ],
         "temperature": 0.7,
-        "max_tokens": 1000
+        "max_tokens": 800
     }
     
     print(f"Размер текста: {len(file_content)} символов")
