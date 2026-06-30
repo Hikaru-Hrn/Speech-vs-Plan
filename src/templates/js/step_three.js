@@ -112,13 +112,30 @@
         }
     }
 
-    function viewInBrowser() {
+    async function viewInBrowser() {
         if (readingBlock) {
             if (readingBlock.style.display === 'none' || readingBlock.style.display === '') {
                 readingBlock.style.display = 'block';
             } else {
                 readingBlock.style.display = 'none';
             }
+        }
+        try {
+            const response = await fetch('/show-in-browser', {
+                method: 'POST',
+                body: null
+            });
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result);
+                readingBlock.textContent = result.gigachat_answer;
+            }
+            else {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+        } catch {
+            console.error('Ошибка при отправке:', error);
+            alert('Ошибка при загрузке файла. Подробности в консоли.');
         }
     }
 
