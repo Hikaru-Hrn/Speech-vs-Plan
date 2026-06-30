@@ -12,6 +12,7 @@ from pathlib import Path
 from md_docx_to_json import plan_to_json
 from transcribe import transcribe_audio_file
 from analyze import ask_with_file_content
+from dotenv import load_dotenv
 
 LECTURES_JSONS_DIR = "lectures"
 TRANSCRIPTS_DIR = "lectures_transcripts"
@@ -24,6 +25,7 @@ FILES_TO_PROCESS = {
     "lecture_transcript": None
 }
 
+load_dotenv()
 templates = Jinja2Templates(directory="templates/html")
 app = FastAPI()
 
@@ -38,18 +40,19 @@ class Stage(BaseModel):
     time: str
     description: str
 
-def save_file(destination_dir: str, 
-                     file: UploadFile):
+def save_file(destination_dir: str, file_type: str, 
+                     file: UploadFile) -> str:
     if not os.path.isdir(destination_dir):
         os.mkdir(destination_dir)
     file_id = len(os.listdir(destination_dir))
     file_extension = Path(file.filename).suffix.lower()
     if not file_extension:
         file_extension = ".bin"
-    file_path = f"{destination_dir}/lecture_{file_id}_plan{file_extension}"
+    file_path = f"{destination_dir}/lecture_{file_id}_{file_type}{file_extension}"
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+    return file_path
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -91,7 +94,7 @@ async def show_form(request: Request):
 async def save_uploaded_plan(file: UploadFile = File(...)):
     """Function to save uploaded plan file"""
 
-    save_file(destination_dir=UPLOADED_PLANS_DIR,
+    save_file(destination_dir=UPLOADED_PLANS_DIR, file_type='',
                    file=file)
 
     return RedirectResponse(url="/plan-to-json")
@@ -140,14 +143,11 @@ async def lecture_to_json(stages: List[Stage]):
 async def save_uploaded_audiofile(file: UploadFile = File(...)):
     """Function to save uploaded audiofile"""
 
-    save_file(destination_dir=UPLOADED_AUDIOFILES_DIR,
+    file_path = save_file(destination_dir=UPLOADED_AUDIOFILES_DIR, file_type="audiofile",
                file=file)
+    FILES_TO_PROCESS["lecture_audiofile"] = file_path
     
-    return RedirectResponse(url="/step3")
-
-@app.post("/speech-transcribe-request")
-async def transcribe_api_request():
-    pass
+    return {"status": "success", "message": "audiofile uploaded"}
 
 @app.post("/gigachat-api-request")
 async def gigachat_api_request():
