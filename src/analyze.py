@@ -8,7 +8,14 @@ GET_TOKEN_PARAMS_FILE = 'get_access_token.json'
 SAVE_TOKEN_FILE = 'access_token.json'
 BASE_URL = "https://gigachat.devices.sberbank.ru/api/v1"
 
-def _form_request():
+def _form_request() -> dict | None:
+    """
+    Выполнение API-запроса на получение токена доступа для GigaChat 
+    и его сохранение в файл access_token.json
+
+    :return: токен доступа, если операция успешна, иначе None
+    :rtype: dict | None
+    """
     rq_uid = str(uuid.uuid4())
 
     with open(GET_TOKEN_PARAMS_FILE, 'r') as data:
@@ -32,9 +39,23 @@ def _form_request():
         return response_json
     except requests.exceptions.RequestException as re:
         print("Error: ", re)
+        return None
 
 
-def get_access_token():
+def get_access_token() -> dict | None:
+    """
+    Получение токена доступа.
+    Функция проверяет файл access_token.json
+
+    Если файла access_token.json не существует или токен лоступа в нём устарел,
+    вызывает _form_request()
+
+    Если файл access_token.json существует и токен доступа в нем действителен,
+    считывает токен из файла
+
+    :return: токен доступа, если операция успешна, иначе None
+    :rtype: dict | None
+    """
     if not os.path.exists(SAVE_TOKEN_FILE) or os.path.getsize(SAVE_TOKEN_FILE) == 0:
         response_json = _form_request()
         return response_json if response_json else None
@@ -47,8 +68,17 @@ def get_access_token():
         return response_json if response_json else None
 
 
-def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str):
-    """Читает файл и отправляет его содержимое напрямую в запросе"""
+def ask_with_file_content(lecture_file_path: str, transcribe_file_path: str) -> requests.Response:
+    """
+    Функция считывает содержимое двух файлов: 
+    изначального плана лекции и транскрибации записи выступления преподавателя.
+    Далее осуществляется API-запрос к LLM GigaChat с содержимым двух файлов для их сравнения
+
+    :param lecture_file_path: Путь до файла с планом лекции
+    :param transcribe_file_path: Путь до файла с транскрибацией выступления преподавателя
+    :return: Ответ GigaChat
+    :rtype: requests.Response
+    """
     access_token_json = get_access_token()
     with open('../prompts/compare_plan.md', 'r', encoding='utf-8') as compare_prompt:
         compare_prompt_text = compare_prompt.read()
