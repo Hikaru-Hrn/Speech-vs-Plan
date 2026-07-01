@@ -55,19 +55,28 @@ def save_file(destination_dir: str, file_type: str,
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     """Function to show main page"""
-    return templates.TemplateResponse(request=request, name="start_window.html")
+    try:
+        return templates.TemplateResponse(request=request, name="start_window.html")
+    except Exception as e:
+        return {"status": "fail", "error_msg": str(e)}
 
 
 @app.get("/step1")
 async def step_one_page(request: Request):
     """Function to show choice of way to upload file page"""
-    return templates.TemplateResponse(request=request, name="step_one.html")
+    try:
+        return templates.TemplateResponse(request=request, name="step_one.html")
+    except Exception as e:
+        return {"status": "fail", "error_msg": str(e)}
 
 
 @app.get("/step2")
 async def step_two_page(request: Request):
     """Function to show uploading audiofile page"""
-    return templates.TemplateResponse(request=request, name="step_two.html")
+    try:
+        return templates.TemplateResponse(request=request, name="step_two.html")
+    except Exception as e:
+        return {"status": "fail", "error_msg": str(e)}
 
 
 @app.get("/step3")
@@ -76,7 +85,7 @@ async def step_three_page(request: Request):
     try:
         return templates.TemplateResponse(request=request, name="step_three.html")
     except Exception as e:
-        return {"status": "fail", "error_msg": e}
+        return {"status": "fail", "error_msg": str(e)}
 
 
 @app.get("/upload-plan")
@@ -85,7 +94,7 @@ async def upload_plan(request: Request):
     try:
         return templates.TemplateResponse(request=request, name="upload_plan.html")
     except Exception as e:
-        return {"status": "fail", "error_msg": e}
+        return {"status": "fail", "error_msg": str(e)}
 
 
 @app.get("/lectures", response_class=HTMLResponse)
@@ -94,7 +103,7 @@ async def show_form(request: Request):
     try:
         return templates.TemplateResponse(request=request, name="form.html")
     except Exception as e:
-        return {"status": "fail", "error_msg": e}
+        return {"status": "fail", "error_msg": str(e)}
 
 @app.get("/upload-transcript")
 async def show_upload_transcript_page(request: Request):
@@ -102,7 +111,7 @@ async def show_upload_transcript_page(request: Request):
     try:
         return templates.TemplateResponse(request=request, name="upload_audio.html")
     except Exception as e:
-        return {"status": "fail", "error_msg": e}
+        return {"status": "fail", "error_msg": str(e)}
 
 @app.post("/save-plan")
 async def save_uploaded_plan(file: UploadFile = File(...)):
@@ -113,7 +122,7 @@ async def save_uploaded_plan(file: UploadFile = File(...)):
                     file=file)
         return RedirectResponse(url="/plan-to-json")
     except Exception as e:
-        return {"status": "fail", "error_msg": e}
+        return {"status": "fail", "error_msg": str(e)}
 
 
 @app.post("/plan-to-json")
@@ -142,7 +151,7 @@ async def uploaded_file_to_json(request: Request):
         return {
                     "status": "fail",
                     "redirect_url": None,
-                    "error_msg": e
+                    "error_msg": str(e)
                 }
 
 @app.post("/lectures/add")
@@ -169,7 +178,7 @@ async def lecture_to_json(stages: List[Stage]):
             "status": "fail",
             "message": "Ошибка при сохранении лекции",
             "redirect_url": "/step2",
-            "error_msg": e
+            "error_msg": str(e)
         }
 
 @app.post("/save-audiofile")
@@ -182,7 +191,7 @@ async def save_uploaded_audiofile(file: UploadFile = File(...)):
         
         return {"status": "success", "message": "audiofile uploaded", "error_msg": None}
     except Exception as e:
-        return {"status": "fail", "message": "an unexcpected", "error_msg": e}
+        return {"status": "fail", "message": "an unexcpected", "error_msg": str(e)}
 
 @app.post("/speech-transcribe-request")
 async def transcribe_api_request(requst: Request):
@@ -197,7 +206,7 @@ async def transcribe_api_request(requst: Request):
         FILES_TO_PROCESS["lecture_transcript"] = lecture_transcribe_path
         return {"message": "success", "redirect_url": "/step3", "error_msg": None}
     except Exception as e:
-        return {"message": "fail", "redirect_url": None, "error_msg": e}
+        return {"message": "fail", "redirect_url": None, "error_msg": str(e)}
 
 @app.post("/gigachat-api-request")
 async def gigachat_api_request():
@@ -213,7 +222,7 @@ async def gigachat_api_request():
         FILES_TO_PROCESS['lecture_comparison'] = file_name
         return {"message": "success", "gigachat_response_saved_to": file_name, "error_msg": None}
     except Exception as e:
-        return {"message": "fail", "gigachat_response_saved_to": None, "error_msg": e}
+        return {"message": "fail", "gigachat_response_saved_to": None, "error_msg": str(e)}
 
 @app.post("/save-transcript")
 async def upload_transcript(file: UploadFile = File(...)):
@@ -233,7 +242,7 @@ async def upload_transcript(file: UploadFile = File(...)):
             "status": "fail",
             "message": "an error occured while uploading file",
             "redirect_url": None,
-            "error_msg": e
+            "error_msg": str(e)
         }
     
 @app.post("/show-in-browser")
@@ -256,7 +265,7 @@ async def show_analysis_in_browser():
         return {
             "status": "fail",
             "gigachat_answer": None,
-            "error_msg": e
+            "error_msg": str(e)
         }
 
 @app.get("/download")
@@ -266,4 +275,7 @@ def download_analysis_file():
             file_path = FILES_TO_PROCESS["lecture_comparison"]
             return FileResponse(path=file_path, filename="lecture_analysis.md")
     except Exception as e:
-        print(f"An error occured: {e}")
+        return {
+            "status": "fail", 
+            "error_msg": f"An error occured: {str(e)}"
+            }
