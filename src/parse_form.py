@@ -201,10 +201,13 @@ async def transcribe_api_request(requst: Request):
             os.mkdir(TRANSCRIPTS_DIR)
         file_id = len(os.listdir(TRANSCRIPTS_DIR))
         lecture_transcribe_path = f"{TRANSCRIPTS_DIR}/lecture_{file_id}_transcript.txt"
-        transcribe_audio_file(input_audio_path=FILES_TO_PROCESS["lecture_audiofile"],
+        is_processed = transcribe_audio_file(input_audio_path=FILES_TO_PROCESS["lecture_audiofile"],
                                             output_text_path=lecture_transcribe_path)
-        FILES_TO_PROCESS["lecture_transcript"] = lecture_transcribe_path
-        return {"message": "success", "redirect_url": "/step3", "error_msg": None}
+        if is_processed:
+            FILES_TO_PROCESS["lecture_transcript"] = lecture_transcribe_path
+            return {"message": "success", "redirect_url": "/step3", "error_msg": None}
+        else:
+            return {"message": "fail", "redirect_url": None, "error_msg": "file is not uploaded"}
     except Exception as e:
         return {"message": "fail", "redirect_url": None, "error_msg": str(e)}
 
