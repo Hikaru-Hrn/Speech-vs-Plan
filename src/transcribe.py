@@ -6,6 +6,7 @@ import audioop
 import grpc
 import boto3
 
+# Встроенные инструменты Python для стабильного опроса операций по REST API
 import urllib.request
 import json
 
@@ -20,7 +21,7 @@ CHUNK_SIZE = 4000
 TARGET_SAMPLE_RATE = 16000
 
 
-# Функция конвертации из WAV в идеальный RAW PCM
+# Функция конвертации из WAV в идеальный RAW PCM (без изменений)
 def convert_wav_to_pcm(wav_path, pcm_path):
     print(f"[КОНВЕРТЕР] Чтение файла {wav_path}...")
     try:
@@ -109,8 +110,10 @@ def run_async_grpc_stt(folder_id, iam_token, file_uri, api_key=None):
     recognition_config = stt_service_pb2.RecognitionConfig(specification=specification, folder_id=folder_id)
     audio = stt_service_pb2.RecognitionAudio(uri=file_uri)
 
+    # Исправленное имя класса: LongRunningRecognitionRequest
     request = stt_service_pb2.LongRunningRecognitionRequest(config=recognition_config, audio=audio)
 
+    # Выбор типа авторизации сервисного аккаунта
     if api_key:
         print("[STT] Авторизация через Сервисный аккаунт (API-ключ)...")
         metadata = (('authorization', f'Api-Key {api_key}'),)
@@ -124,6 +127,7 @@ def run_async_grpc_stt(folder_id, iam_token, file_uri, api_key=None):
         operation_id = operation.id
         print(f"[STT] Создана фоновая операция. ID: {operation_id}")
 
+        # Безопасный и стабильный опрос статуса через REST API (HTTPS)
         url = f"https://operation.api.cloud.yandex.net/operations/{operation_id}"
 
         while True:
@@ -186,7 +190,7 @@ def transcribe_audio_file(input_audio_path, output_text_path):
 
     audio_working_path = input_audio_path
     is_temp_file = False
-    temp_pcm_path = "../data/inbox_audio_test/temp_converted_audio.pcm"
+    temp_pcm_path = "../data/inbox_audio/temp_converted_audio.pcm"
 
     # Обработка конвертации из WAV в PCM
     if input_audio_path.lower().endswith('.wav'):
@@ -232,5 +236,5 @@ def transcribe_audio_file(input_audio_path, output_text_path):
     return False
 
 
-if __name__ == '__main__':
-    transcribe_audio_file("../data/inbox_audio/greenhushing.wav", "../data/outbox_audio_test/transcript.txt")
+# if __name__ == '__main__':
+#    transcribe_audio_file("../data/inbox_audio/greenhushing.wav", "../data/outbox_audio2text/transcript.txt")
