@@ -180,7 +180,12 @@
 
             const result = await response.json();
             console.log('Ответ от FastAPI:', result);
-            alert('Файл успешно загружен!');
+            if (result.message === "success") {
+                alert('Файл успешно конвертирован!');
+            }
+            else {
+                alert(`Не удалось конвертировать файл: ${result.error_msg}`)
+            }
             if (result.redirect_url) {
                     window.location.href = result.redirect_url;
             }
@@ -215,6 +220,7 @@
 
             const result = await response.json();
             console.log('Ответ от FastAPI:', result);
+            alert('Файл успешно загружен!');
         } catch (error) {
             console.error('Ошибка при отправке:', error);
         }
