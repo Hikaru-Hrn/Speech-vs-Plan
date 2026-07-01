@@ -3,9 +3,9 @@ import json
 import requests
 import os
 import time
+import uuid
 from pathlib import Path
 
-# Импортируем инструменты из оригинальных файлов (analyze.py не изменяется)
 from analyze import get_access_token, ask_with_file_content, _form_request
 from transcribe import transcribe_audio_file
 
@@ -33,41 +33,107 @@ def get_unique_path(target_dir: Path, filename_stem: str, extension: str) -> Pat
         counter += 1
 
 
-def fix_corrupted_token_file():
+def fetch_and_save_gigachat_token_safely() -> bool:
     """
-    Защита от падения analyze.py.
-    Если access_token.json поврежден или содержит null, удаляем его.
+    Самостоятельно и безопасно запрашивает токен у GigaChat.
+    Формирует структуру в соответствии с требованиями API v2.
+    Возвращает True в случае успеха.
+    """
+    if not os.path.exists(GET_TOKEN_PARAMS_FILE):
+        return False
+
+    try:
+        with open(GET_TOKEN_PARAMS_FILE, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+
+        url = config.get("url", "https://ngw.devices.sberbank.ru:9443/api/v2/oauth")
+
+        # АВТО-ИСПРАВЛЕНИЕ: Принудительно переводим с v1 на v2, чтобы SynGX не выдавал 400 Bad Request
+        if "/v1/" in url:
+            url = url.replace("/v1/", "/v2/")
+
+        auth_data = config.get("auth_data", "")
+        # СТРОГАЯ ОЧИСТКА: Удаляем пробелы и переносы строк, которые гарантированно ломают заголовки
+        auth_data = auth_data.strip().replace("\n", "").replace("\r", "")
+
+        cert_path = config.get("cert_path", "russian_trusted_root_ca_pem.crt")
+        scope = config.get("payload", {}).get("scope", "GIGACHAT_API_PERS")
+
+        if not auth_data:
+            typer.secho("Ошибка: В конфигурации отсутствует auth_data!", fg=typer.colors.RED)
+            return False
+
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+            "RqUID": str(uuid.uuid4()),
+            "Authorization": f"Basic {auth_data}"
+        }
+        payload = {"scope": scope}
+
+        verify_val = cert_path if os.path.exists(cert_path) else False
+        if not verify_val:
+            import urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+        res = requests.post(url, headers=headers, data=payload, verify=verify_val, timeout=15)
+
+        if res.status_code == 200:
+            res_data = res.json()
+            token_info = {
+                "access_token": res_data["access_token"],
+                "expires_at": res_data["expires_at"]
+            }
+            with open(SAVE_TOKEN_FILE, 'w', encoding='utf-8') as tf:
+                json.dump(token_info, tf, indent=4)
+            return True
+        else:
+            typer.secho(f"[Ошибка Сбера] Код: {res.status_code}, URL: {url}", fg=typer.colors.RED)
+            typer.secho(f"Ответ сервера:\n{res.text}", fg=typer.colors.YELLOW)
+            return False
+
+    except Exception as e:
+        typer.secho(f"[Исключение при получении токена]: {e}", fg=typer.colors.RED)
+        return False
+
+
+def check_or_refresh_token():
+    """
+    Проверяет существование и валидность токена.
+    Если он просрочен или отсутствует — генерирует новый.
     """
     token_file = Path(SAVE_TOKEN_FILE)
+    need_refresh = True
+
     if token_file.exists():
         try:
-            if token_file.stat().st_size == 0:
-                return
             with open(token_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            if data is None or not isinstance(data, dict) or 'expires_at' not in data:
-                token_file.unlink()
+            if data and isinstance(data, dict) and data.get('expires_at', 0) > int(time.time() * 1000):
+                need_refresh = False
         except Exception:
-            token_file.unlink()
+            pass
+
+    if need_refresh:
+        typer.echo("Токен GigaChat отсутствует или просрочен. Обновляем...")
+        success = fetch_and_save_gigachat_token_safely()
+        if not success:
+            typer.secho("Ошибка: Не удалось обновить токен GigaChat. Дальнейший анализ невозможен.",
+                        fg=typer.colors.RED)
+            raise typer.Exit(code=1)
 
 
 def main(
         tokens: bool = typer.Option(False, "--tokens", "-t", help="Обновить токены (.env и GigaChat)"),
-        input_audio_file: str = typer.Option(None, "--input", "-i",
-                                             help="Путь к входному аудиофайлу (data/inbox_audio)"),
-        output_audio2text: str = typer.Option(None, "--output-text", "-o",
-                                              help="Директория или файл для текста (data/outbox_audio2text)"),
+        input_audio_file: str = typer.Option(None, "--input", "-i", help="Путь к входному аудиофайлу (data/inbox_audio)"),
+        output_audio2text: str = typer.Option(None, "--output-text", "-o", help="Директория или файл для текста (data/outbox_audio2text)"),
         input_plan: str = typer.Option(None, "--input-plan", "-p", help="Путь к файлу с планом (data/inbox_plan)"),
         result: str = typer.Option(None, "--result", "-r", help="Директория для сохранения результатов (data/result)"),
-        mode: str = typer.Option("full", "--mode", "-m",
-                                 help="Режим: full, transcribe (только Yandex), analyze (только GigaChat)"),
+        mode: str = typer.Option("full", "--mode", "-m", help="Режим: full, transcribe (только Yandex), analyze (только GigaChat)"),
 ):
     """
     CLI-утилита для транскрибации аудио через Yandex SpeechKit API и анализа текста в GigaChat.
     """
-    # Автоматическое лечение json-файла Сбера при любых сбоях
-    fix_corrupted_token_file()
-
     # === 1. БЛОК ОБНОВЛЕНИЯ КОНФИГУРАЦИИ И ТОКЕНОВ ===
     if tokens:
         typer.secho("=== Настройка Yandex SpeechKit API & Object Storage ===", fg=typer.colors.BLUE)
@@ -77,7 +143,6 @@ def main(
         aws_secret_access_key = typer.prompt("Введите AWS_SECRET_ACCESS_KEY")
         speechkit_api_key = typer.prompt("Введите SPEECHKIT_API_KEY")
 
-        # Сохранение строго 5 актуальных параметров в .env
         with open("../.env", "w", encoding="utf-8") as f:
             f.write(f"FOLDER_ID={folder_id}\n")
             f.write(f"BUCKET_NAME={bucket_name}\n")
@@ -89,24 +154,17 @@ def main(
         auth_data = typer.prompt("Введите auth_data")
 
         gigachat_config = {
-            "url": "https://ngw.devices.sberbank.ru:9443/api/v1/oauth",
+            "url": "https://ngw.devices.sberbank.ru:9443/api/v2/oauth",  # Изначально пишем v2
             "payload": {"scope": "GIGACHAT_API_PERS"},
             "cert_path": "russian_trusted_root_ca_pem.crt",
-            "auth_data": auth_data
+            "auth_data": auth_data.strip()
         }
 
         with open(GET_TOKEN_PARAMS_FILE, "w", encoding="utf-8") as f:
             json.dump(gigachat_config, f, indent=4)
 
         typer.echo("Запрос стартового токена GigaChat...")
-        token_res = _form_request()
-
-        if token_res is None:
-            typer.secho("❌ Ошибка: Не удалось авторизоваться в GigaChat!", fg=typer.colors.RED)
-            typer.secho("Проверьте auth_data и наличие файла сертификата 'russian_trusted_root_ca_pem.crt'.",
-                        fg=typer.colors.YELLOW)
-            if Path(SAVE_TOKEN_FILE).exists():
-                Path(SAVE_TOKEN_FILE).unlink()
+        if not fetch_and_save_gigachat_token_safely():
             raise typer.Exit(code=1)
 
         typer.secho("Все конфигурации успешно обновлены и проверены!", fg=typer.colors.GREEN)
@@ -129,7 +187,6 @@ def main(
         audio_path = Path(input_audio_file)
         out_text_dir = Path(output_audio2text) if output_audio2text else (data_path / "outbox_audio2text")
 
-        # Получаем уникальное имя вида lection.txt, lection1.txt и т.д.
         actual_output_text_path = get_unique_path(out_text_dir, audio_path.stem, ".txt")
 
         typer.echo(f"Транскрибация {audio_path.name} -> {actual_output_text_path.name}...")
@@ -153,12 +210,12 @@ def main(
         plan_path = Path(input_plan)
         result_dir = Path(result) if result else (data_path / "result")
 
-        # Имя для результата по маске result.txt, result1.txt
         actual_result_path = get_unique_path(result_dir, "result", ".txt")
 
-        typer.echo("Анализ текста через GigaChat API...")
+        # Проверяем и обновляем токен через безопасную функцию v2 перед запуском analyze.py
+        check_or_refresh_token()
 
-        fix_corrupted_token_file()
+        typer.echo("Анализ текста через GigaChat API...")
         response = ask_with_file_content(str(plan_path), str(actual_output_text_path))
 
         if isinstance(response, requests.Response):
