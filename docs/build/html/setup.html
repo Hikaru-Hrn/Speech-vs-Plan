@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Настройка &#8212; документация Speech-vs-Plan 1.0.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=e35015f7"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/translations.js?v=cd1d70c9"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="Использование" href="usage.html" />
+    <link rel="prev" title="Speech-vs-Plan documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>Настройка<a class="headerlink" href="#id1" title="Ссылка на этот заголовок">¶</a></h1>
+<p>Для работы с GigaChat необходимо:</p>
+<ol class="arabic simple">
+<li><p>Получить авторизационные данные в личном кабинете GigaChat</p></li>
+<li><p>Создать файл <code class="docutils literal notranslate"><span class="pre">get_access_token.json</span></code> со структурой:</p></li>
+</ol>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://gigachat.devices.sberbank.ru/api/v1/oauth&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;auth_data&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ваш_токен&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scope=GIGACHAT_API_PERS&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cert_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/путь/до/сертификата.pem&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Speech-vs-Plan</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Настройка</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Использование</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="предыдущая глава">Speech-vs-Plan documentation</a></li>
+      <li>Next: <a href="usage.html" title="следующая глава">Использование</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Ilya Gorokhov, Sergey Pleskunov, Maxim Yakimov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/setup.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Reference &#8212; документация Speech-vs-Plan 1.0.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=e35015f7"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/translations.js?v=cd1d70c9"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="prev" title="Использование" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Ссылка на этот заголовок">¶</a></h1>
+<section id="module-analyze">
+<span id="analyze"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">analyze</span></code><a class="headerlink" href="#module-analyze" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="analyze._form_request">
+<span class="sig-prename descclassname"><span class="pre">analyze.</span></span><span class="sig-name descname"><span class="pre">_form_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/analyze.html#_form_request"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#analyze._form_request" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Выполнение API-запроса на получение токена доступа для GigaChat 
+и его сохранение в файл access_token.json</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>токен доступа, если операция успешна, иначе None</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analyze.get_access_token">
+<span class="sig-prename descclassname"><span class="pre">analyze.</span></span><span class="sig-name descname"><span class="pre">get_access_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/analyze.html#get_access_token"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#analyze.get_access_token" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение токена доступа.
+Функция проверяет файл access_token.json</p>
+<p>Если файла access_token.json не существует или токен лоступа в нём устарел,
+вызывает _form_request()</p>
+<p>Если файл access_token.json существует и токен доступа в нем действителен,
+считывает токен из файла</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>токен доступа, если операция успешна, иначе None</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analyze.ask_with_file_content">
+<span class="sig-prename descclassname"><span class="pre">analyze.</span></span><span class="sig-name descname"><span class="pre">ask_with_file_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lecture_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcribe_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="reference internal" href="_modules/analyze.html#ask_with_file_content"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#analyze.ask_with_file_content" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция считывает содержимое двух файлов: 
+изначального плана лекции и транскрибации записи выступления преподавателя.
+Далее осуществляется API-запрос к LLM GigaChat с содержимым двух файлов для их сравнения</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lecture_file_path</strong> – Путь до файла с планом лекции</p></li>
+<li><p><strong>transcribe_file_path</strong> – Путь до файла с транскрибацией выступления преподавателя</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Ответ GigaChat</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>requests.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">analyze.</span></span><span class="sig-name descname"><span class="pre">get_access_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/analyze.html#get_access_token"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#id0" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение токена доступа.
+Функция проверяет файл access_token.json</p>
+<p>Если файла access_token.json не существует или токен лоступа в нём устарел,
+вызывает _form_request()</p>
+<p>Если файл access_token.json существует и токен доступа в нем действителен,
+считывает токен из файла</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>токен доступа, если операция успешна, иначе None</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-prename descclassname"><span class="pre">analyze.</span></span><span class="sig-name descname"><span class="pre">ask_with_file_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lecture_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcribe_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="reference internal" href="_modules/analyze.html#ask_with_file_content"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#id1" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция считывает содержимое двух файлов: 
+изначального плана лекции и транскрибации записи выступления преподавателя.
+Далее осуществляется API-запрос к LLM GigaChat с содержимым двух файлов для их сравнения</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lecture_file_path</strong> – Путь до файла с планом лекции</p></li>
+<li><p><strong>transcribe_file_path</strong> – Путь до файла с транскрибацией выступления преподавателя</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Ответ GigaChat</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>requests.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-prename descclassname"><span class="pre">analyze.</span></span><span class="sig-name descname"><span class="pre">_form_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/analyze.html#_form_request"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#id2" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Выполнение API-запроса на получение токена доступа для GigaChat 
+и его сохранение в файл access_token.json</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>токен доступа, если операция успешна, иначе None</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict | None</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Примечание</p>
+<p>Это внутренняя функция, используемая для получения токена.
+Обычно её не нужно вызывать напрямую.</p>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Speech-vs-Plan</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Настройка</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Использование</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-analyze">Модуль <code class="docutils literal notranslate"><span class="pre">analyze</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="предыдущая глава">Использование</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Ilya Gorokhov, Sergey Pleskunov, Maxim Yakimov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
